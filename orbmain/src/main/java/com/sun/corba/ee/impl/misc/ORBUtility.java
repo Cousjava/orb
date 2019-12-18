@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -46,7 +47,6 @@ import org.omg.CORBA.portable.InputStream ;
 import com.sun.corba.ee.spi.ior.IOR ;
 import com.sun.corba.ee.spi.presentation.rmi.StubAdapter ;
 import com.sun.corba.ee.spi.orb.ORB ;
-import com.sun.corba.ee.spi.orb.ORBVersion ;
 import com.sun.corba.ee.spi.orb.ORBVersionFactory ;
 import com.sun.corba.ee.spi.protocol.ClientDelegate ;
 import com.sun.corba.ee.spi.protocol.MessageMediator;
@@ -62,7 +62,6 @@ import com.sun.corba.ee.spi.logging.ORBUtilSystemException ;
 import com.sun.corba.ee.spi.logging.OMGSystemException ;
 import com.sun.corba.ee.impl.ior.iiop.JavaSerializationComponent;
 import com.sun.corba.ee.impl.javax.rmi.CORBA.Util;
-import com.sun.corba.ee.impl.io.ValueHandlerImpl;
 
 /**
  *  Handy class full of static functions that don't belong in util.Utility for pure ORB reasons.
@@ -79,15 +78,7 @@ public final class ORBUtility {
         try {
             sc.connect( sa ) ;
             return sc ;
-        } catch (RuntimeException exc ) {
-            try {
-                sc.close() ;
-            } catch (IOException ioe) {
-                // Ignore this: close exceptions are useless.
-            }
-
-            throw exc ;
-        } catch (IOException exc ) {
+        } catch (RuntimeException | IOException exc ) {
             try {
                 sc.close() ;
             } catch (IOException ioe) {
@@ -96,12 +87,14 @@ public final class ORBUtility {
 
             throw exc ;
         }
+        
     }
 
     private static final ThreadLocal<LinkedList<Byte>> encVersionThreadLocal =
         new ThreadLocal<LinkedList<Byte>>() {
+            @Override
             protected LinkedList<Byte> initialValue() {
-                return new LinkedList<Byte>();
+                return new LinkedList<>();
             }
         };
 
@@ -429,7 +422,7 @@ public final class ORBUtility {
         return id;
     }
 
-    private static final Hashtable exceptionClassNames = new Hashtable();
+    private static final Hashtable<String, String> exceptionClassNames = new Hashtable<>();
     private static final Hashtable exceptionRepositoryIds = new Hashtable();
 
     static {
@@ -530,17 +523,15 @@ public final class ORBUtility {
         //
         // construct className -> repositoryId hashtable
         //
-        Enumeration keys = exceptionClassNames.keys();
-        java.lang.Object s;
+        Enumeration<String> keys = exceptionClassNames.keys();
         String rId;
         String cName;
 
         try{
             while (keys.hasMoreElements()) {
-                s = keys.nextElement();
-                rId = (String) s;
-                cName = (String) exceptionClassNames.get(rId);
-                exceptionRepositoryIds.put (cName, rId);
+                rId = keys.nextElement();
+                cName = exceptionClassNames.get(rId);
+                exceptionRepositoryIds.put(cName, rId);
             }
         } catch (NoSuchElementException e) { }
     }
@@ -968,7 +959,7 @@ public final class ORBUtility {
         String result =
             (String)AccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
-                    StringBuffer sb = new StringBuffer(500);
+                    StringBuilder sb = new StringBuilder(500);
                     ProtectionDomain pd = cl.getProtectionDomain();
                     Policy policy = Policy.getPolicy();
                     PermissionCollection pc = policy.getPermissions(pd);
