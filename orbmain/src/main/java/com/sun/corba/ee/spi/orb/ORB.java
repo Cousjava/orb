@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -448,12 +449,20 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
     public abstract void setParameters( String[] args, Properties props ) ;
 
     // ORB versioning
+    /**
+     * Returns the implementation version of the ORB
+     * @return the ORB version.
+     */
     @ManagedAttribute
     @Description( "The implementation version of the ORB" )
     public abstract ORBVersion getORBVersion() ;
 
     public abstract void setORBVersion( ORBVersion version ) ;
 
+    /**
+     * Returns the IOR used for the Full Value Description
+     * @return The IOR used for the Full Value Description
+     */
     @ManagedAttribute
     @Description( "The IOR used for the Full Value Description" ) 
     public abstract IOR getFVDCodeBaseIOR() ;
@@ -491,30 +500,55 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
     @Description( "The transient ServerId of this ORB instance" ) 
     public abstract int getTransientServerId();
 
+    /**
+     * Returns the registry for all ServerContext factories of this server.
+     * @return the registry.
+     */
     @ManagedAttribute
     @Description( "The registry for all ServerContext factories" ) 
     public abstract ServiceContextFactoryRegistry getServiceContextFactoryRegistry() ;
 
+    /**
+     * Returns the cache used to optimise marshaling of ServiceContexts
+     * @return the cache used
+     */
     @ManagedAttribute
     @Description( "The cache used to opimize marshaling of ServiceContexts" ) 
     public abstract ServiceContextsCache getServiceContextsCache();
 
+    /**
+     * The RequestDispatcher registry, which contains the request handling code
+     * @return The RequestDispatcher registry
+     */
     @ManagedAttribute
     @Description( "The RequestDispatcher registry, which contains the request handling code" ) 
     public abstract RequestDispatcherRegistry getRequestDispatcherRegistry();
 
+    /**
+     * The ORB configuration data
+     * @return Config data
+     */
     @ManagedAttribute
     @Description( "The ORB configuration data" ) 
     public abstract ORBData getORBData() ;
 
     public abstract void setClientDelegateFactory( ClientDelegateFactory factory ) ;
 
+    /**
+     * Returns the ClientDelegateFactory, which is used to create the ClientDelegate that represents an IOR
+     * @return The ClientDelegateFactory
+     */
     @ManagedAttribute
     @Description( "The ClientDelegateFactory, which is used to create the ClientDelegate that represents an IOR" )
     public abstract ClientDelegateFactory getClientDelegateFactory() ;
 
     public abstract void setCorbaContactInfoListFactory( ContactInfoListFactory factory ) ;
 
+    /**
+     * Returns the CorbaContactInfoListFactory, which creates the contact info list that represents
+     * possible endpoints in an IOR.
+     * @return CorbaContactInfoListFactory used
+     */
     @ManagedAttribute
     @Description( "The CorbaContactInfoListFactory, which creates the contact info list that represents "
         + "possible endpoints in an IOR" ) 
@@ -522,11 +556,15 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
 
     /** Set the resolver used in this ORB.  This resolver will be used for list_initial_services
      * and resolve_initial_references.
+     * 
+     * @param resolver resolver to be used
      */
     public abstract void setResolver( Resolver resolver ) ;
 
     /** Get the resolver used in this ORB.  This resolver will be used for list_initial_services
      * and resolve_initial_references.
+     * 
+     * @return ORB Name resolver
      */
     @ManagedAttribute
     @Description( "ORB Name resolver" ) 
@@ -534,11 +572,15 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
 
     /** Set the LocalResolver used in this ORB.  This LocalResolver is used for 
      * register_initial_reference only.
+     * 
+     * @param resolver ORB Local Name resolver
      */
     public abstract void setLocalResolver( LocalResolver resolver ) ;
 
     /** Get the LocalResolver used in this ORB.  This LocalResolver is used for 
      * register_initial_reference only.
+     * 
+     * @return ORB Local Name resolver
      */
     @ManagedAttribute
     @Description( "ORB Local Name resolver" ) 
@@ -546,30 +588,46 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
 
     /** Set the operation used in string_to_object calls.  The Operation must expect a
      * String and return an org.omg.CORBA.Object.
+     * 
+     * @param stringToObject operation to be used
      */
     public abstract void setURLOperation( Operation stringToObject ) ;
 
     /** Get the operation used in string_to_object calls.  The Operation must expect a
      * String and return an org.omg.CORBA.Object.
+     * 
+     * @return operation used
      */
     public abstract Operation getURLOperation() ;
 
     /** Set the ServerRequestDispatcher that should be used for handling INS requests.
+     * 
+     * @param insDelegate dispatcher to be used
      */
     public abstract void setINSDelegate( ServerRequestDispatcher insDelegate ) ;
 
     /** Factory finders for the various parts of the IOR: tagged components, tagged
      * profiles, and tagged profile templates.
+     * 
+     * @return Finder of Factories for TaggedComponents of IORs
      */
     @ManagedAttribute
     @Description( "Finder of Factories for TaggedComponents of IORs" )
     public abstract TaggedComponentFactoryFinder getTaggedComponentFactoryFinder() ;
 
+    /**
+     * Factory finders for the various parts of the IOR: tagged profiles
+     * @return Finder of Factories for TaggedProfiles of IORs
+     */
     @ManagedAttribute
     @Description( "Finder of Factories for TaggedProfiles of IORs" )
     public abstract IdentifiableFactoryFinder<TaggedProfile> 
         getTaggedProfileFactoryFinder() ;
 
+    /**
+     * Factory finders for the various parts of the IOR: tagged profile templates
+     * @return Finder of Factories for TaggedProfileTemplates of IORs
+     */
     @ManagedAttribute
     @Description( "Finder of Factories for TaggedProfileTemplates of IORs" )
     public abstract IdentifiableFactoryFinder<TaggedProfileTemplate> 
@@ -620,6 +678,8 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
      * and guaranteed to be unique within the ClassLoader that loaded the
      * ORB class.  This is the default implementation inherited by the
      * ORBSingleton.
+     * 
+     * @return a unique name
      */
     @NameValue
     public String getUniqueOrbId()  {
@@ -684,16 +744,15 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
 
         mom.createRoot( this, getUniqueOrbId() ) ;
     }
-
-    /** Return the ORB's TimerManager.
-     */
-    // public abstract TimerManager<TimingPoints> getTimerManager() ;
     
-    // This method obtains an IOR from a CORBA object reference.
-    // The result is never null.
-    // Throws BAD_OPERATION (from oi._get_delegate) if obj is a
-    // normal objref, but does not have a delegate set.
-    // Throws BAD_PARAM if obj is a local object
+    /** This method obtains an IOR from a CORBA object reference.
+     * The result is never null.
+     * @param obj CORBA object reference
+     * @return obtained IOR
+     * @throws org.omg.CORBA.BAD_OPERATION (from oi._get_delegate) if obj is a
+     * normal objref, but does not have a delegate set.
+     * @throws org.omg.CORBA.BAD_PARAM if obj is a local object
+    */ 
     protected IOR getIOR( org.omg.CORBA.Object obj ) 
     {
         if (obj == null)
@@ -746,6 +805,9 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
      * what ORB implementation created it.  It may be more efficient for objrefs
      * that were created by this ORB implementation.
      *
+     * @param obj CORBA object to get IOR for
+     * @param connectIfNecessary connect to RMI-IIOP if not already
+     * @return obtained IOR
      * @exception SystemException (nullObjectReference) if obj is null
      * @exception SystemException (localObjectNotAllowed) of obj is a local CORBA object.
      */
@@ -756,6 +818,8 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
     }
 
     /** The singleton ORB does not need the cache, so just return null here.
+     * @param objKey ignored
+     * @return null
      */
     public ObjectKeyCacheEntry extractObjectKeyCacheEntry(byte[] objKey) {
         return null ;
@@ -763,12 +827,13 @@ public abstract class ORB extends com.sun.corba.ee.org.omg.CORBA.ORB
 
     /** Return whether or not the ORB is shutdown.  A shutdown ORB cannot process
      * incoming requests.
+     * @return true
      */
     public boolean orbIsShutdown() {
         return true ;
     }
 
-    private static UnaryFunction<String,Class<?>> defaultClassNameResolver =
+    private static final UnaryFunction<String,Class<?>> defaultClassNameResolver =
         new UnaryFunction<String,Class<?>>() {
             public Class<?> evaluate( String name ) {
                 try {

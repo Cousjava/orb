@@ -62,6 +62,7 @@ import com.sun.corba.ee.spi.logging.ORBUtilSystemException ;
 import com.sun.corba.ee.spi.logging.OMGSystemException ;
 import com.sun.corba.ee.impl.ior.iiop.JavaSerializationComponent;
 import com.sun.corba.ee.impl.javax.rmi.CORBA.Util;
+import java.io.Serializable;
 
 /**
  *  Handy class full of static functions that don't belong in util.Utility for pure ORB reasons.
@@ -69,6 +70,10 @@ import com.sun.corba.ee.impl.javax.rmi.CORBA.Util;
 public final class ORBUtility {
     /** Utility method for working around leak in SocketChannel.open( SocketAddress )
      * method.
+     * @param sa address to connect to
+     * @return The opened channel
+     * @throws java.io.IOException If an I/O error occurs
+     * @see SocketChannel#connect(java.net.SocketAddress)
      */
     public static SocketChannel openSocketChannel( SocketAddress sa ) 
         throws IOException {
@@ -144,6 +149,9 @@ public final class ORBUtility {
     }
 
     /**
+     * @param orb The ORB
+     * @param ior Interoperable object reference
+     * @param gv The maximum GIOP version supported
      * @return the Java serialization encoding version.
      */
     public static byte chooseEncodingVersion(ORB orb, IOR ior, 
@@ -213,15 +221,14 @@ public final class ORBUtility {
                     type.member_type(0).equal(systemExceptionMembers[0].type) &&
                     type.member_type(1).equal(systemExceptionMembers[1].type) &&
                     type.member_type(2).equal(systemExceptionMembers[2].type));
-        } catch (BadKind ex) {
-            return false;
-        } catch (org.omg.CORBA.TypeCodePackage.Bounds ex) {
+        } catch (BadKind | org.omg.CORBA.TypeCodePackage.Bounds ex) {
             return false;
         }
     }
 
     /**
      * Static method for writing a CORBA standard exception to an Any.
+     * @param ex Exception to write
      * @param any The Any to write the SystemException into.
      */
     public static void insertSystemException(SystemException ex, Any any) {
@@ -250,6 +257,7 @@ public final class ORBUtility {
     
     /**
      * Gets the ValueHandler from Util.createValueHandler.
+     * @return gets the ValueHandler
      */
     public static ValueHandler createValueHandler() {
         return vhandler;
@@ -258,6 +266,9 @@ public final class ORBUtility {
     /**
      * Creates the correct ValueHandler.  The parameter
      * is ignored
+     * @param orb ignored
+     * @return The correct ValueHandler
+     * @see #createValueHandler() 
      */
     public static ValueHandler createValueHandler(ORB orb) {
         return vhandler;
@@ -267,6 +278,8 @@ public final class ORBUtility {
      * Returns true if it was accurately determined that the remote ORB is
      * a foreign (non-JavaSoft) ORB.  Note:  If passed the ORBSingleton, this
      * will return false.
+     * @param orb ORB to test
+     * @return If the ORB is foreign
      */
     public static boolean isForeignORB(ORB orb)
     {
@@ -287,6 +300,7 @@ public final class ORBUtility {
         and  array[offset+3] is the least-significant-byte.
         @param array The array of bytes.
         @param offset The offset from which to start unmarshalling.
+        @return Unmarshalled integer
     */
     public static int bytesToInt(byte[] array, int offset)
     {
@@ -304,6 +318,7 @@ public final class ORBUtility {
         The bytes are in BIGENDIAN order.
         i.e. array[offset] is the most-significant-byte
         and  array[offset+3] is the least-significant-byte.
+        @param value Integer to marshal
         @param array The array of bytes.
         @param offset The offset from which to start marshalling.
     */
@@ -316,6 +331,8 @@ public final class ORBUtility {
     }
 
     /** Converts an Ascii Character into Hexadecimal digit
+     * @param x ASCII character to convert
+     * @return Hexadecimal digit
      */
     public static int hexOf( char x )
     {
@@ -343,6 +360,7 @@ public final class ORBUtility {
 
     /**
      * Static method for writing a CORBA standard exception to a stream.
+     * @param ex Exception to write to stream
      * @param strm The OutputStream to use for marshaling.
      */
     public static void writeSystemException(SystemException ex, OutputStream strm)
@@ -357,7 +375,8 @@ public final class ORBUtility {
 
     /**
      * Static method for reading a CORBA standard exception from a stream.
-     * @param strm The InputStream to use for unmarshaling.
+     * @param strm The InputStream to use for unmarshalling.
+     * @return Exception in stream
      */
     public static SystemException readSystemException(InputStream strm)
     {
@@ -379,6 +398,7 @@ public final class ORBUtility {
      * appropriate exception class for an marshaled as the value of
      * its repository Id.
      * @param repositoryId The repository Id for which we want a class name.
+     * @return Corresponding class name
      */
     public static String classNameOf(String repositoryId)
     {
@@ -395,6 +415,7 @@ public final class ORBUtility {
     /**
      * Return true if this repositoryId is a SystemException.
      * @param repositoryId The repository Id to check.
+     * @return if ID is a SystemException
      */
     public static boolean isSystemException(String repositoryId)
     {
@@ -409,6 +430,7 @@ public final class ORBUtility {
      * This is used by the system to write the
      * appropriate repository id for a system exception.
      * @param name The class name of the system exception.
+     * @return Repository ID
      */
     public static String repositoryIdOf(String name)
     {
@@ -539,6 +561,8 @@ public final class ORBUtility {
     /** Parse a version string such as "1.1.6" or "jdk1.2fcs" into
         a version array of integers {1, 1, 6} or {1, 2}.
         A string of "n." or "n..m" is equivalent to "n.0" or "n.0.m" respectively.
+     * @param version Java version
+     * @return Array of version parts
     */
     public static int[] parseVersion(String version) {
         if (version == null) {
@@ -581,6 +605,9 @@ public final class ORBUtility {
 
     /** Compare two version arrays.
         Return 1, 0 or -1 if v1 is greater than, equal to, or less than v2.
+     * @param v1 first version
+     * @param v2 second version
+     * @return 1, 0 or -1 if v1 is greater than, equal to, or less than v2.
     */
     public static int compareVersion(int[] v1, int[] v2) {
         if (v1 == null) {
@@ -602,6 +629,10 @@ public final class ORBUtility {
 
     /** Compare two version strings.
         Return 1, 0 or -1 if v1 is greater than, equal to, or less than v2.
+     * @param v1 first version string
+     * @param v2 second version string
+     * @return 1, 0 or -1 if v1 is greater than, equal to, or less than v2.
+     * @see #compareVersion(int[], int[]) 
     */
     public static synchronized int compareVersion(String v1, String v2) {
         return compareVersion(parseVersion(v1), parseVersion(v2));
@@ -729,6 +760,7 @@ public final class ORBUtility {
      * build running on JDK 1.3.x.
      *
      * 2) We need to pick up the correct minor code from OMGSystemException.
+     * @param className Class that is not {@link Serializable}
      */
     public static void throwNotSerializableForCorba(String className) {
         throw omgWrapper.notSerializable( className ) ;
@@ -737,6 +769,7 @@ public final class ORBUtility {
     /**
      * Returns the maximum stream format version supported by our
      * ValueHandler.
+     * @return he maximum stream format version
      */
     public static byte getMaxStreamFormatVersion() {
         ValueHandler vh = Util.getInstance().createValueHandler();
@@ -757,6 +790,8 @@ public final class ORBUtility {
     }
 
     /** This method is used to create untyped object references.
+     * @param ior object to make reference of
+     * @return Object pointing to the IOR
     */
     public static org.omg.CORBA.Object makeObjectReference( IOR ior )   
     {
@@ -820,6 +855,8 @@ public final class ORBUtility {
      * <LI>Each data line must contain an even number of non-whitespace
      * characters.
      * </OL>
+     * @param data data to extract
+     * @return byte array containing the data
      */
     public static byte[] getBuffer( String[] data ) {
         // Estimate size of result

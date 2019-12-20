@@ -97,11 +97,12 @@ import org.glassfish.gmbal.ManagedObject;
 *   <li>oa.returnServant()</li>
 *   <li>oa.exit()</li>
 *   <li>pop info</li>
-*   <ol>
-* </li>
+*   </ol>
+* <ul><li>
 * REVISIT: Is this the required order for exit/pop?  Can they be nested instead?
 * Note that getInvocationServant and returnServant may throw exceptions.  In such cases,
 * returnServant, exit, and pop must be called in the correct order.
+* </li></ul></li>
 * <li>The local pattern:  
 *   <ol>
 *   <li>oa = oaf.find( oaid )</li>
@@ -114,10 +115,11 @@ import org.glassfish.gmbal.ManagedObject;
 *   <li>oa.returnServant()</li>
 *   <li>oa.exit()</li>
 *   <li>pop info</li>
-*   <ol>
-* </li>
+*   </ol>
+* <ul><li>
 * This is the same as the remote case, except that setExecuteReturnServantInResponseConstructor
 * is not needed (or possible, since there is no server request).
+* </li></ul></li>
 * <li>The fast local pattern: When delegate is constructed, 
 *    first extract ObjectKey from IOR in delegate,
 *    then get ObjectId, ObjectAdapterId, and ObjectAdapterFactory (oaf). Then:
@@ -174,14 +176,14 @@ public interface ObjectAdapter
     ////////////////////////////////////////////////////////////////////////////
 
     /** Return the ID of the AdapterManager for this object adapter.
-     * @return 
+     * @return the identifier
     */
     @ManagedAttribute
     @Description( "The identifier for the AdapterManager that manages this ObjectAdapter")
     int getManagerId() ;
 
     /** Return the current state of this object adapter (see 
-    * {@link org.omg.PortableInterceptors} for states).
+    * {@link org.omg.PortableInterceptor} for states).
     * @return the current state of this object adapter 
     * @see org.omg.PortableInterceptor
     */
@@ -220,7 +222,7 @@ public interface ObjectAdapter
     * The servant is set in the InvocationInfo argument that is passed into 
     * this call.  
     * @param info is the InvocationInfo object for the object reference
-    * @exception ForwardException (a runtime exception) is thrown if the request 
+    * @exception com.sun.corba.ee.spi.protocol.ForwardException (a runtime exception) is thrown if the request 
     * is to be handled by a different object reference.
     */
     void getInvocationServant( OAInvocationInfo info ) ;
@@ -244,7 +246,7 @@ public interface ObjectAdapter
 
     /** Create an instance of InvocationInfo that is appropriate for this 
     * Object adapter.
-    * @param objectId 
+    * @param objectId ID of object to create
     * @return created instance
     */
     OAInvocationInfo makeInvocationInfo( byte[] objectId ) ;
